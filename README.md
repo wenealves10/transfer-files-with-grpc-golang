@@ -2,10 +2,22 @@
 
 ## compile proto file
 
-```bash
-protoc --proto_path=pkg pkg/proto/*.proto --go_out=.
-```
+## install
 
 ```bash
-protoc --go_out=plugins=grpc:. --go_opt=paths=. pkg/proto/*.proto
+go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+```
+
+## generate
+```bash
+protoc --proto_path=pkg pkg/proto/*.proto --go_out=. --go-grpc_out=.
+```
+## run server
+```bash
+go run cmd/server/main.go
+```
+## run client
+```bash
+go run -race cmd/client/main.go ./image/name.png
 ```

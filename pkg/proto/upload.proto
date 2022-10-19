@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "pkg/pb";
+
+service UploadService {
+    rpc Upload(stream UploadRequest) returns (UploadResponse) {}
+}
+
+message UploadRequest {
+    string mime = 1;
+    bytes chunk = 2;
+}
+
+message UploadResponse {
+    string name = 1;
+}
