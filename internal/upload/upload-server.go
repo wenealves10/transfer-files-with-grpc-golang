@@ -22,7 +22,7 @@ func NewServer(storage storage.Manager) Server {
 }
 
 func (s Server) Upload(stream pb.UploadService_UploadServer) error {
-	name := "some-unique-name.png"
+	name := "video.mp4"
 	file := storage.NewFile(name)
 
 	for {
