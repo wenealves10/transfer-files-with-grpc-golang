@@ -18,7 +18,8 @@ func main() {
 	}
 
 	// Initialise gRPC connection.
-	conn, err := grpc.Dial(":50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	conn, err := grpc.Dial("34.125.26.191:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -2,6 +2,7 @@ package upload
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"time"
@@ -21,7 +22,7 @@ func NewClient(conn grpc.ClientConnInterface) Client {
 }
 
 func (c Client) Upload(ctx context.Context, file string) (string, error) {
-	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(10*time.Second))
+	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(12000*time.Second))
 	defer cancel()
 
 	stream, err := c.client.Upload(ctx)
@@ -34,8 +35,17 @@ func (c Client) Upload(ctx context.Context, file string) (string, error) {
 		return "", err
 	}
 
-	// Maximum 1KB size per stream.
-	buf := make([]byte, 1024)
+	// Maximum buffer size is 2MB.
+	buf := make([]byte, 2*1024*1024)
+
+	infoFile, err := fil.Stat()
+	if err != nil {
+		return "", err
+	}
+
+	sizeFile := infoFile.Size()
+
+	var total int64
 
 	for {
 		num, err := fil.Read(buf)
@@ -49,6 +59,10 @@ func (c Client) Upload(ctx context.Context, file string) (string, error) {
 		if err := stream.Send(&pb.UploadRequest{Chunk: buf[:num]}); err != nil {
 			return "", err
 		}
+
+		total += int64(num)
+
+		fmt.Printf("Progress: %.2f%% \r", float64(total)/float64(sizeFile)*100)
 	}
 
 	res, err := stream.CloseAndRecv()
